@@ -12,9 +12,9 @@ export default function appScr(express, bodyParser, fs, crypto, http, CORS, User
         .all('/login/', r => {
             r.res.set(headers).send(isu);
         })
-        // .all('/wordpress/', r => {
-        //     r.res.set(headers).send(JSON(post));
-        // })
+        .all('/wordpress/', r => {
+            r.res.set(headers).send(isu);
+        })
         .all('/code/', r => {
             r.res.set(headers)
             fs.readFile(import.meta.url.substring(7),(err, data) => {
