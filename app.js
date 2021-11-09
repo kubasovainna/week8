@@ -10,9 +10,8 @@ export default function appScr(express, bodyParser, fs, crypto, http, CORS, User
     app
         .use(bodyParser.urlencoded({extended:true}))       
         .all('/login/', r => {
-            r.res.set(headers).send(isu);
-            r.res.json(post);
-        })
+            r.res.set(headers).json(post);
+            console.log(post);        })
         .all('/wordpress/', r => {
             r.res.set(headers).send(post);
         })
