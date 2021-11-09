@@ -6,14 +6,14 @@ export default function appScr(express, bodyParser, fs, crypto, http, CORS, User
         ...CORS
     }
     const isu = 'itmo224658';
-    let post = { "id":"1", "title": isu };
+    let post = { "id":1 , "title": isu };
     app
         .use(bodyParser.urlencoded({extended:true}))       
         .all('/login/', r => {
             r.res.set(headers).send(isu);
         })
         .all('/wordpress/', r => {
-            r.res.set(headers).send(isu);
+            r.res.set(headers).send(post);
         })
         .all('/code/', r => {
             r.res.set(headers)
