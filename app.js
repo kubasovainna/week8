@@ -15,7 +15,7 @@ export default function appScr(express, bodyParser, fs, crypto, http, CORS, User
             r.res.set(headersJSON).send(JSON.stringify(post));
       
         })
-        .all('/wordpress//wordpress/wp-json/wp/v2/posts/', r => {
+        .all('/wordpress/wp-json/wp/v2/posts/', r => {
             console.log(post);  
             r.res.set(headersJSON).send(JSON.stringify(post));
       
