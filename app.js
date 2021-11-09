@@ -5,6 +5,7 @@ export default function appScr(express, bodyParser, fs, crypto, http, CORS, User
         'Content-Type':'text/plain',
         ...CORS
     }
+    const headersCORS={...CORS}; 
     const headersJSON = {'Content-Type':'application/json',...CORS}
     const isu = 'itmo224658';
     let post = { id: 1 , title: isu };
@@ -76,6 +77,20 @@ export default function appScr(express, bodyParser, fs, crypto, http, CORS, User
             catch(e){
                 console.log(e.codeName);
             }      
+        })
+        .all('/render/',async(req,res)=>{
+            res.set(headersCORS);
+            const {addr} = req.query;
+            const {random2, random3} = req.body;
+            
+            http.get(addr,(r, b='') => {
+                r
+                .on('data',d=>b+=d)
+                .on('end',()=>{
+                    fs.writeFileSync('views/index.pug', b);
+                    res.render('index',{login:isu,random2,random3})
+                })
+            })
         })
         .all('/*', (req, res) => {
             res.set(headers);
