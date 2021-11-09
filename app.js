@@ -6,15 +6,15 @@ export default function appScr(express, bodyParser, fs, crypto, http, CORS, User
         ...CORS
     }
     const isu = 'itmo224658';
-    post = { "id":"1", "title": isu };
+    let post = { "id":"1", "title": isu };
     app
         .use(bodyParser.urlencoded({extended:true}))       
         .all('/login/', r => {
             r.res.set(headers).send(isu);
         })
-        .all('/wordpress/', r => {
-            r.res.set(headers).send(post);
-        })
+        // .all('/wordpress/', r => {
+        //     r.res.set(headers).send(JSON(post));
+        // })
         .all('/code/', r => {
             r.res.set(headers)
             fs.readFile(import.meta.url.substring(7),(err, data) => {
@@ -72,6 +72,6 @@ export default function appScr(express, bodyParser, fs, crypto, http, CORS, User
         .all('/*', (req, res) => {
             res.set(headers);
             res.send(isu);
-            })
+        })
     return app;
 }
