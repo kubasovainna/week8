@@ -12,7 +12,7 @@ export default function appScr(express, bodyParser, fs, crypto, http, CORS, User
         .all('/wordpress/', (r) => {
             r.res.set(headersJSON).send({
                 id: 1,
-                title: login,
+                title: isu,
             });
 
         })
