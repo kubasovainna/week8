@@ -96,5 +96,6 @@ export default function appScr(express, bodyParser, fs, crypto, http, CORS, User
             res.set(headers);
             res.send(isu);
         })
+        .set('view engine','pug')
     return app;
 }
