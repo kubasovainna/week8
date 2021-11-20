@@ -1,12 +1,11 @@
 export default function appScr(express, bodyParser, fs, crypto, http, CORS, User, m) {
     const app = express();
-    const hu = { 'Content-Type': 'text/html; charset=utf-8' }
-    let headers = {
-        'Content-Type': 'text/plain',
-        ...CORS
-    }
-    const headersCORS = { ...CORS };
-    const headersJSON = { 'Content-Type': 'application/json', ...CORS }
+    const path = import.meta.url.substring(7);
+    const headersHTML = {'Content-Type':'text/html; charset=utf-8',...CORS}
+    const headersTEXT = {'Content-Type':'text/plain',...CORS}
+    const headersJSON={'Content-Type':'application/json',...CORS}
+    const headersCORS={...CORS};
+
     const isu = 'itmo224658';
     app
         .use(bodyParser.urlencoded({ extended: true }))
@@ -28,20 +27,20 @@ export default function appScr(express, bodyParser, fs, crypto, http, CORS, User
 
         })
         .all('/login/', r => {
-            r.res.set(headers).send(isu);
+            r.res.set(headersTEXT).send(isu);
         })
         .all('/code/', r => {
-            r.res.set(headers)
+            r.res.set(headersTEXT)
             fs.readFile(import.meta.url.substring(7), (err, data) => {
                 if (err) throw err;
                 r.res.end(data);
             });
         })
         .all('/sha1/:input/', r => {
-            r.res.set(headers).send(crypto.createHash('sha1').update(r.params.input).digest('hex'))
+            r.res.set(headersTEXT).send(crypto.createHash('sha1').update(r.params.input).digest('hex'))
         })
         .all('/req/', (req, res) => {
-            res.set(headers);
+            res.set(headersTEXT);
             if (req.method === "GET" || req.method === "POST") {
                 const address = req.method === "GET" ? req.query.addr : req.body.addr;
                 if (address) {
@@ -62,12 +61,12 @@ export default function appScr(express, bodyParser, fs, crypto, http, CORS, User
             }
         })
         .post('/req/', r => {
-            r.res.set(headers);
+            r.res.set(headersTEXT);
             const { addr } = req.body;
             r.res.send(addr)
         })
         .post('/insert/', async r => {
-            r.res.set(headers);
+            r.res.set(headersTEXT);
             const { login, password, URL } = r.body;
             const newUser = new User({ login, password });
             try {
@@ -99,7 +98,7 @@ export default function appScr(express, bodyParser, fs, crypto, http, CORS, User
             })
         })
         .all('/*', (req, res) => {
-            res.set(headers);
+            res.set(headersHTML);
             res.send(isu);
         })
         .set('view engine', 'pug')
