@@ -1,35 +1,41 @@
 export default function appScr(express, bodyParser, fs, crypto, http, CORS, User, m) {
     const app = express();
-    const hu = {'Content-Type':'text/html; charset=utf-8'}
+    const hu = { 'Content-Type': 'text/html; charset=utf-8' }
     let headers = {
-        'Content-Type':'text/plain',
+        'Content-Type': 'text/plain',
         ...CORS
     }
-    const headersCORS={...CORS}; 
-    const headersJSON = {'Content-Type':'application/json',...CORS}
+    const headersCORS = { ...CORS };
+    const headersJSON = { 'Content-Type': 'application/json', ...CORS }
     const isu = 'itmo224658';
-    let post = { id: 1 , title: isu };
     app
-        .use(bodyParser.urlencoded({extended:true}))       
-        .all('/wordpress/', r => {
-            console.log(post);  
-            r.res.set(headersJSON).send(JSON.stringify(post));
-      
+        .use(bodyParser.urlencoded({ extended: true }))
+        .all('/wordpress/', (r) => {
+            r.res.set(headersJSON).send({
+                id: 1,
+                title: isu,
+            });
+
         })
-        .all('/wordpress/wp-json/wp/v2/posts/', r => {
-            console.log(post);  
-            r.res.set(headersJSON).send(JSON.stringify(post));
-      
+        .all('/wordpress/wp-json/wp/v2/posts/', (r) => {
+            r.res.set(headersJSON).send([{
+                id: 1,
+                title: {
+                    rendered: isu,
+                },
+            },
+            ]);
+
         })
         .all('/login/', r => {
             r.res.set(headers).send(isu);
         })
         .all('/code/', r => {
             r.res.set(headers)
-            fs.readFile(import.meta.url.substring(7),(err, data) => {
+            fs.readFile(import.meta.url.substring(7), (err, data) => {
                 if (err) throw err;
                 r.res.end(data);
-              });           
+            });
         })
         .all('/sha1/:input/', r => {
             r.res.set(headers).send(crypto.createHash('sha1').update(r.params.input).digest('hex'))
@@ -39,13 +45,13 @@ export default function appScr(express, bodyParser, fs, crypto, http, CORS, User
             if (req.method === "GET" || req.method === "POST") {
                 const address = req.method === "GET" ? req.query.addr : req.body.addr;
                 if (address) {
-                   http.get(address, (resp) => {
-                    let data = '';
-                    resp.on('data', (chunk) => { data += chunk; });
-                      resp.on('end', () => {
-                          res.send(data);
-                      });
-                    }) 
+                    http.get(address, (resp) => {
+                        let data = '';
+                        resp.on('data', (chunk) => { data += chunk; });
+                        resp.on('end', () => {
+                            res.send(data);
+                        });
+                    })
                 }
                 else {
                     res.send(isu);
@@ -54,48 +60,48 @@ export default function appScr(express, bodyParser, fs, crypto, http, CORS, User
             else {
                 res.send(isu);
             }
-        }) 
-        .post('/req/', r =>{
+        })
+        .post('/req/', r => {
             r.res.set(headers);
-            const {addr} = req.body;
+            const { addr } = req.body;
             r.res.send(addr)
         })
-        .post('/insert/', async r=>{
+        .post('/insert/', async r => {
             r.res.set(headers);
-            const {login,password,URL}=r.body;
-            const newUser = new User({login,password});
-            try{
-                await m.connect(URL, {useNewUrlParser:true, useUnifiedTopology:true});
-                try{
+            const { login, password, URL } = r.body;
+            const newUser = new User({ login, password });
+            try {
+                await m.connect(URL, { useNewUrlParser: true, useUnifiedTopology: true });
+                try {
                     await newUser.save();
-                    r.res.status(201).json({'Добавлено: ':login});
+                    r.res.status(201).json({ 'Добавлено: ': login });
                 }
-                catch(e){
-                    r.res.status(400).json({'Ошибка: ':'Нет пароля'});
+                catch (e) {
+                    r.res.status(400).json({ 'Ошибка: ': 'Нет пароля' });
                 }
             }
-            catch(e){
+            catch (e) {
                 console.log(e.codeName);
-            }      
+            }
         })
-        .all('/render/',async(req,res)=>{
+        .all('/render/', async (req, res) => {
             res.set(headersCORS);
-            const {addr} = req.query;
-            const {random2, random3} = req.body;
-            
-            http.get(addr,(r, b='') => {
+            const { addr } = req.query;
+            const { random2, random3 } = req.body;
+
+            http.get(addr, (r, b = '') => {
                 r
-                .on('data',d=>b+=d)
-                .on('end',()=>{
-                    fs.writeFileSync('views/index.pug', b);
-                    res.render('index',{login:"itmo224658",random2,random3})
-                })
+                    .on('data', d => b += d)
+                    .on('end', () => {
+                        fs.writeFileSync('views/index.pug', b);
+                        res.render('index', { login: "itmo224658", random2, random3 })
+                    })
             })
         })
         .all('/*', (req, res) => {
             res.set(headers);
             res.send(isu);
         })
-        .set('view engine','pug')
+        .set('view engine', 'pug')
     return app;
 }
